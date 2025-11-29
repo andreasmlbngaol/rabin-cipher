@@ -1,0 +1,34 @@
+name: Deploy WASM
+
+on:
+  push:
+    paths-ignore:
+      - "README.md"
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: "temurin"
+          java-version: "21"
+
+      - name: Grant execute permission
+        run: chmod +x ./gradlew
+
+      - name: Build WASM
+        run: ./gradlew :composeApp:wasmJsBrowserDistribution
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: composeApp/build/dist/wasmJs/productionExecutable
