@@ -22,7 +22,7 @@ kotlin {
         browser()
         binaries.executable()
     }
-    
+
     sourceSets {
         commonMain.dependencies {
             implementation(libs.compose.runtime)
@@ -68,9 +68,39 @@ compose.desktop {
         mainClass = "com.andreasmlbngaol.rabin.MainKt"
 
         nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "com.andreasmlbngaol.rabin"
             packageVersion = "1.0.0"
+            description = "Rabin"
+            vendor = "Andreas M Lbn Gaol"
+
+            targetFormats(
+                TargetFormat.Dmg,
+                TargetFormat.Msi,
+                TargetFormat.Deb
+            )
+
+            linux {
+                shortcut = true
+                packageName = "rabin"
+                debPackageVersion = "1.0.0"
+                appCategory = "Utility"
+                menuGroup = "Utility"
+                debMaintainer = "Andreas M Lbn Gaol <lgandre45@gmail.com>"
+            }
+
+            windows {
+                shortcut = true
+                menu = true
+                menuGroup = "Rabin"
+                msiPackageVersion = "1.0.0"
+                exePackageVersion = "1.0.0"
+                console = false
+            }
+
+            macOS {
+                packageVersion = "1.0.0"
+                packageName = "Rabin"
+            }
         }
     }
 }
