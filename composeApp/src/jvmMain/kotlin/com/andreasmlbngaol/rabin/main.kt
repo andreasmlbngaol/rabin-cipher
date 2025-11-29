@@ -2,7 +2,6 @@ package com.andreasmlbngaol.rabin
 
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPlacement
-import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import com.andreasmlbngaol.rabin.di.initKoin
@@ -17,7 +16,7 @@ fun main() {
             state = rememberWindowState(
                 placement = WindowPlacement.Maximized
             ),
-            resizable = false
+//            resizable = false
         ) {
             App()
         }

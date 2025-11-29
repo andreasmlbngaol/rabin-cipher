@@ -1,11 +1,16 @@
 package com.andreasmlbngaol.rabin.presentation.screen.rabin_basic.decrypt
 
 import androidx.lifecycle.ViewModel
-import com.andreasmlbngaol.rabin.data.RabinBasicValidator
+import com.andreasmlbngaol.rabin.domain.service.RabinValidator
+import com.andreasmlbngaol.rabin.domain.model.rabin_basic.RabinBasicDecryptResult
+import com.andreasmlbngaol.rabin.presentation.utils.extendedGCD
+import com.andreasmlbngaol.rabin.presentation.utils.modPow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-class RabinBasicDecryptViewModel : ViewModel() {
+class RabinBasicDecryptViewModel(
+    private val validator: RabinValidator
+) : ViewModel() {
     private val _state = MutableStateFlow(RabinBasicDecryptState())
     val state = _state.asStateFlow()
 
@@ -28,17 +33,17 @@ class RabinBasicDecryptViewModel : ViewModel() {
         val errors = mutableMapOf<String, String>()
 
         if (state.pAsString.isNotEmpty()) {
-            val (_, error) = RabinBasicValidator.validateP(state.pAsString)
+            val (_, error) = validator.validateP(state.pAsString)
             error?.let { errors["p"] = it }
         }
 
         if (state.qAsString.isNotEmpty()) {
-            val (_, error) = RabinBasicValidator.validateQ(state.qAsString)
+            val (_, error) = validator.validateQ(state.qAsString)
             error?.let { errors["q"] = it }
         }
 
         if (state.ciphertextAsString.isNotEmpty()) {
-            val (_, error) = RabinBasicValidator.validateCiphertext(
+            val (_, error) = validator.validateBasicCipher(
                 state.ciphertextAsString,
                 state.p,
                 state.q
@@ -60,36 +65,55 @@ class RabinBasicDecryptViewModel : ViewModel() {
 
         val steps = mutableListOf<String>()
 
-        steps.add("Input:\n   p = $p\n   q = $q\n   c = $c")
+        steps.add(
+            "Input:\n" +
+                    "   p = $p\n" +
+                    "   q = $q\n" +
+                    "   c = $c"
+        )
 
-        // Step 1: Hitung r = c^((p+1)/4) mod p
         val exponent1 = (p + 1) / 4
-        val r = modPow(c.toLong(), exponent1.toLong(), p.toLong()).toInt()
-        steps.add("1. Hitung r = c^((p+1)/4) mod p\n   r = $c^${(exponent1.toString())} mod $p\n   r = $r")
+        val r = c.modPow(exponent1, p)
+        steps.add(
+            "1. Hitung r = c^((p+1)/4) mod p\n" +
+                    "   r = $c^${(exponent1.toString())} mod $p\n" +
+                    "   r = $r"
+        )
 
-        // Step 2: Hitung s = c^((q+1)/4) mod q
         val exponent2 = (q + 1) / 4
-        val s = modPow(c.toLong(), exponent2.toLong(), q.toLong()).toInt()
-        steps.add("2. Hitung s = c^((q+1)/4) mod q\n   s = $c^${(exponent2.toString())} mod $q\n   s = $s")
+        val s = c.modPow(exponent2, q)
+        steps.add(
+            "2. Hitung s = c^((q+1)/4) mod q\n" +
+                    "   s = $c^${(exponent2.toString())} mod $q\n" +
+                    "   s = $s"
+        )
 
-        // Step 3: Extended Euclidean Algorithm untuk mencari x, y
         val (x, y) = extendedGCD(p, q)
-        steps.add("3. Persamaan Diophantine: p · x + q · y = 1\n   $p · x + $q · y = 1\n   x = $x, y = $y")
+        steps.add(
+            "3. Persamaan Diophantine: p · x + q · y = 1\n" +
+                    "   $p · x + $q · y = 1\n" +
+                    "   x = $x, y = $y"
+        )
 
-        // Step 4: Hitung m1 - m4
-        val m1Raw = x.toLong() * p * s + y.toLong() * q * r
-        val m1 = (m1Raw % n).let { if (it < 0) (it + n) else it }.toInt()
+        val m1Raw = x * p * s + y * q * r
+        val m1 = (m1Raw % n).let { if (it < 0) (it + n) else it }
         val m2 = (n - m1)
 
-        val m3Raw = x.toLong() * p * s - y.toLong() * q * r
-        val m3 = (m3Raw % n).let { if (it < 0) (it + n) else it }.toInt()
+        val m3Raw = x * p * s - y * q * r
+        val m3 = (m3Raw % n).let { if (it < 0) (it + n) else it }
         val m4 = (n - m3)
 
-        steps.add("4. Kandidat Pesan (M1-M4):\n   M1 = (x · p · s + y · q · r) mod n = ($x · $p · $s + $y · $q · $r) mod $n = $m1\n   M2 = n - M1 = $m2\n   M3 = (x · p · s - y · q · r) mod n = ($x · $p · $s - $y · $q · $r) mod $n = $m3\n   M4 = n - M3 = $m4")
+        steps.add(
+            "4. Kandidat Pesan (M1-M4):\n" +
+                    "   M1 = (x · p · s + y · q · r) mod n = ($x · $p · $s + $y · $q · $r) mod $n = $m1\n" +
+                    "   M2 = n - M1 = $m2\n" +
+                    "   M3 = (x · p · s - y · q · r) mod n = ($x · $p · $s - $y · $q · $r) mod $n = $m3\n" +
+                    "   M4 = n - M3 = $m4"
+        )
 
-        val candidates = listOf(m1.toLong(), m2.toLong(), m3.toLong(), m4.toLong())
+        val candidates = listOf(m1, m2, m3, m4)
 
-        val result = RabinBasicDecryptionResult(
+        val result = RabinBasicDecryptResult(
             ciphertext = c,
             p = p,
             q = q,
@@ -105,26 +129,6 @@ class RabinBasicDecryptViewModel : ViewModel() {
 
     fun resetResult() {
         _state.value = _state.value.copy(result = null)
-    }
-
-    private fun modPow(base: Long, exp: Long, mod: Long): Long {
-        var result = 1L
-        var b = base % mod
-        var e = exp
-        while (e > 0) {
-            if (e % 2 == 1L) result = (result * b) % mod
-            b = (b * b) % mod
-            e /= 2
-        }
-        return result
-    }
-
-    private fun extendedGCD(a: Int, b: Int): Pair<Long, Long> {
-        if (b == 0) return Pair(1L, 0L)
-        val (x1, y1) = extendedGCD(b, a % b)
-        val x = y1
-        val y = x1 - (a / b).toLong() * y1
-        return Pair(x, y)
     }
 }
 

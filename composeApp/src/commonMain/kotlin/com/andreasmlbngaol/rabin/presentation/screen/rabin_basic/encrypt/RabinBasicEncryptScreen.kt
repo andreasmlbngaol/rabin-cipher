@@ -17,6 +17,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.andreasmlbngaol.rabin.domain.model.rabin_basic.RabinBasicEncryptResult
+import com.andreasmlbngaol.rabin.presentation.component.CopyToClipboardButton
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -59,7 +61,6 @@ fun RabinBasicEncryptScreen(
                 },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 maxLines = 1
-
             )
             OutlinedTextField(
                 value = state.qAsString,
@@ -75,7 +76,6 @@ fun RabinBasicEncryptScreen(
                 },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 maxLines = 1
-
             )
         }
 
@@ -112,8 +112,8 @@ fun RabinBasicEncryptScreen(
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun EncryptResultCard(
-    result: RabinBasicEncryptionResult?,
+private fun EncryptResultCard(
+    result: RabinBasicEncryptResult?,
     onResetResult: () -> Unit
 ) {
     var isExpanded by remember { mutableStateOf(false) }
@@ -124,7 +124,7 @@ fun EncryptResultCard(
                 modifier = Modifier.fillMaxWidth(),
                 shape = MaterialTheme.shapes.large,
                 colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f)
+                    containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.15f)
                 )
             ) {
                 Column(
@@ -141,23 +141,29 @@ fun EncryptResultCard(
                             Text(
                                 text = "Hasil Enkripsi",
                                 style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.Bold
-                            )
-                            Text(
-                                text = "Ciphertext: ${res.ciphertext}",
-                                style = MaterialTheme.typography.headlineSmall,
                                 fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.padding(top = 8.dp)
+                                color = MaterialTheme.colorScheme.primary
                             )
+                            Row(
+                                modifier = Modifier.padding(top = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Text(
+                                    text = "Ciphertext: ${res.ciphertext}",
+                                    style = MaterialTheme.typography.headlineSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                CopyToClipboardButton(res.ciphertext)
+                            }
                         }
                         FilledTonalButton(
                             onClick = { isExpanded = !isExpanded },
-                            modifier = Modifier
-                                .padding(top = 12.dp),
+                            modifier = Modifier.padding(top = 12.dp),
                             colors = ButtonDefaults.filledTonalButtonColors(
-                                containerColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.9f),
-                                contentColor = MaterialTheme.colorScheme.onSecondary
+                                containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.9f),
+                                contentColor = MaterialTheme.colorScheme.onPrimary
                             ),
                             shapes = ButtonDefaults.shapes()
                         ) {
@@ -175,26 +181,27 @@ fun EncryptResultCard(
                             modifier = Modifier.fillMaxWidth(),
                             verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
-                            HorizontalDivider()
+                            HorizontalDivider(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f))
 
                             // Step-by-step
                             Text(
                                 text = "Langkah-Langkah Enkripsi",
                                 style = MaterialTheme.typography.labelLarge,
                                 fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(top = 8.dp)
+                                modifier = Modifier.padding(top = 8.dp),
+                                color = MaterialTheme.colorScheme.primary
                             )
 
                             Card(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .background(
-                                        MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f),
+                                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f),
                                         MaterialTheme.shapes.medium
                                     ),
                                 shape = MaterialTheme.shapes.medium,
                                 colors = CardDefaults.cardColors(
-                                    containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.3f)
+                                    containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.2f)
                                 )
                             ) {
                                 Column(
@@ -213,19 +220,19 @@ fun EncryptResultCard(
                                 }
                             }
 
-                            HorizontalDivider()
+                            HorizontalDivider(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f))
 
                             // Summary Box
                             Card(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .background(
-                                        MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.4f),
+                                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
                                         MaterialTheme.shapes.medium
                                     ),
                                 shape = MaterialTheme.shapes.medium,
                                 colors = CardDefaults.cardColors(
-                                    containerColor = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.2f)
+                                    containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.1f)
                                 )
                             ) {
                                 Column(
@@ -235,12 +242,14 @@ fun EncryptResultCard(
                                     Text(
                                         text = "Public Key (n) = ${res.n}",
                                         style = MaterialTheme.typography.bodyMedium,
-                                        color = MaterialTheme.colorScheme.onSurface
+                                        color = MaterialTheme.colorScheme.primary,
+                                        fontWeight = FontWeight.SemiBold
                                     )
                                     Text(
                                         text = "Private Key (p, q) = (${res.p}, ${res.q})",
                                         style = MaterialTheme.typography.bodyMedium,
-                                        color = MaterialTheme.colorScheme.onSurface
+                                        color = MaterialTheme.colorScheme.primary,
+                                        fontWeight = FontWeight.SemiBold
                                     )
                                     Text(
                                         text = "Message = ${res.message}",
@@ -251,14 +260,14 @@ fun EncryptResultCard(
                                         text = "Ciphertext (c) = ${res.ciphertext}",
                                         style = MaterialTheme.typography.bodyMedium,
                                         fontWeight = FontWeight.Bold,
-                                        color = MaterialTheme.colorScheme.onSurface
+                                        color = MaterialTheme.colorScheme.primary
                                     )
                                 }
                             }
                         }
                     }
 
-                    HorizontalDivider()
+                    HorizontalDivider(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f))
 
                     FilledTonalButton(
                         onClick = {
@@ -268,8 +277,8 @@ fun EncryptResultCard(
                         modifier = Modifier.align(Alignment.End),
                         shapes = ButtonDefaults.shapes(),
                         colors = ButtonDefaults.filledTonalButtonColors(
-                            containerColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.9f),
-                            contentColor = MaterialTheme.colorScheme.onTertiary
+                            containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
+                            contentColor = MaterialTheme.colorScheme.onPrimary
                         )
                     ) {
                         Text("Reset")

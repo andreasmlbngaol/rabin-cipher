@@ -1,7 +1,9 @@
 package com.andreasmlbngaol.rabin.presentation.navigation
 
+import com.andreasmlbngaol.rabin.presentation.screen.h_rabin.HRabinScreen
 import com.andreasmlbngaol.rabin.presentation.screen.home.HomeScreen
 import com.andreasmlbngaol.rabin.presentation.screen.rabin_basic.RabinBasicScreen
+import com.andreasmlbngaol.rabin.presentation.screen.rabin_p.RabinPScreen
 import org.koin.core.annotation.KoinExperimentalAPI
 import org.koin.dsl.module
 import org.koin.dsl.navigation3.navigation
@@ -23,6 +25,10 @@ val navigationModule = module {
     }
 
     navigation<Screen.RabinP> {
+        RabinPScreen()
+    }
 
+    navigation<Screen.HRabin> {
+        HRabinScreen()
     }
 }

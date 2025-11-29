@@ -8,14 +8,15 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import com.andreasmlbngaol.rabin.presentation.navigation.Navigator
@@ -28,7 +29,9 @@ fun TopBar(
     title: String,
     scrollBehavior: TopAppBarScrollBehavior? = null,
     type: TopBarType = TopBarType.Default,
-    navigator: Navigator = koinInject()
+    navigator: Navigator = koinInject(),
+    containerColor: Color = MaterialTheme.colorScheme.surface,
+    scrolledContainerColor: Color = Color.Transparent
 ) {
     @Composable
     fun navigationIcon() {
@@ -46,10 +49,10 @@ fun TopBar(
     }
 
     val colors = TopAppBarDefaults.topAppBarColors().copy(
-//        containerColor = MaterialTheme.colorScheme.primaryContainer,
-        scrolledContainerColor = Color.Transparent,
-        navigationIconContentColor = MaterialTheme.colorScheme.secondary,
-//        titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+        containerColor = containerColor,
+        scrolledContainerColor = scrolledContainerColor,
+        navigationIconContentColor = containerColor,
+        titleContentColor = contentColorFor(containerColor),
         actionIconContentColor = MaterialTheme.colorScheme.primary
     )
 
@@ -59,7 +62,8 @@ fun TopBar(
                 title = { Text(title) },
                 navigationIcon = { navigationIcon() },
                 scrollBehavior = scrollBehavior,
-                colors = colors
+                colors = colors,
+                modifier = Modifier
             )
         }
         TopBarType.Default -> {

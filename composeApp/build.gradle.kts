@@ -33,6 +33,7 @@ kotlin {
             implementation(libs.compose.components.resources)
             implementation(libs.compose.components.ui.tooling.preview)
             implementation(libs.material.icons)
+            implementation(libs.material3.window.size)
 
             implementation(libs.lifecycle.viewmodel.compose)
             implementation(libs.lifecycle.runtime.compose)

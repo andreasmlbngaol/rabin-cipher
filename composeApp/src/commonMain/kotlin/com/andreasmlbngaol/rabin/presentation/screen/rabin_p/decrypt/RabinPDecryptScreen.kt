@@ -1,4 +1,4 @@
-package com.andreasmlbngaol.rabin.presentation.screen.rabin_basic.decrypt
+package com.andreasmlbngaol.rabin.presentation.screen.rabin_p.decrypt
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -14,6 +14,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -37,15 +38,15 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.andreasmlbngaol.rabin.domain.model.rabin_basic.RabinBasicDecryptResult
+import com.andreasmlbngaol.rabin.domain.model.rabin_p.RabinPDecryptResult
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun RabinBasicDecryptScreen(
+fun RabinPDecryptScreen(
     modifier: Modifier = Modifier
 ) {
-    val viewModel = koinViewModel<RabinBasicDecryptViewModel>()
+    val viewModel = koinViewModel<RabinPDecryptViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     Column(
@@ -61,42 +62,21 @@ fun RabinBasicDecryptScreen(
             textDecoration = TextDecoration.Underline
         )
 
-        Row(
+        OutlinedTextField(
+            value = state.pAsString,
+            onValueChange = viewModel::onPChange,
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            OutlinedTextField(
-                value = state.pAsString,
-                onValueChange = viewModel::onPChange,
-                modifier = Modifier.weight(1f),
-                shape = MaterialTheme.shapes.large,
-                label = { Text("P") },
-                isError = "p" in state.errors,
-                supportingText = {
-                    AnimatedVisibility("p" in state.errors) {
-                        Text(state.errors["p"] ?: "")
-                    }
-                },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                maxLines = 1
-            )
-            OutlinedTextField(
-                value = state.qAsString,
-                onValueChange = viewModel::onQChange,
-                modifier = Modifier.weight(1f),
-                shape = MaterialTheme.shapes.large,
-                label = { Text("Q") },
-                isError = "q" in state.errors,
-                supportingText = {
-                    AnimatedVisibility("q" in state.errors) {
-                        Text(state.errors["q"] ?: "")
-                    }
-                },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                maxLines = 1
-            )
-        }
+            shape = MaterialTheme.shapes.large,
+            label = { Text("P") },
+            isError = "p" in state.errors,
+            supportingText = {
+                AnimatedVisibility("p" in state.errors) {
+                    Text(state.errors["p"] ?: "")
+                }
+            },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            maxLines = 1
+        )
 
         OutlinedTextField(
             value = state.ciphertextAsString,
@@ -108,8 +88,6 @@ fun RabinBasicDecryptScreen(
             supportingText = {
                 if ("ciphertext" in state.errors) {
                     Text(state.errors["ciphertext"] ?: "")
-                } else if (state.n != null) {
-                    Text("Max: ${state.n!! - 1}")
                 }
             },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -132,7 +110,7 @@ fun RabinBasicDecryptScreen(
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun DecryptResultCard(
-    result: RabinBasicDecryptResult?,
+    result: RabinPDecryptResult?,
     onResetResult: () -> Unit
 ) {
     var isExpanded by remember { mutableStateOf(false) }
@@ -143,14 +121,14 @@ private fun DecryptResultCard(
                 modifier = Modifier.fillMaxWidth(),
                 shape = MaterialTheme.shapes.large,
                 colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.15f)
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.15f)
                 )
             ) {
                 Column(
                     modifier = Modifier.padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    // Header dengan Kandidat dan View Button
+                    // Header dengan Message dan View Button
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(32.dp),
@@ -161,13 +139,13 @@ private fun DecryptResultCard(
                                 text = "Hasil Dekripsi",
                                 style = MaterialTheme.typography.titleLarge,
                                 fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.primary
+                                color = MaterialTheme.colorScheme.secondary
                             )
                             Text(
-                                text = "Kandidat: ${res.candidates.joinToString(", ") { it.toString()}}",
+                                text = "Message: ${res.message}",
                                 style = MaterialTheme.typography.headlineSmall,
                                 fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.primary,
+                                color = MaterialTheme.colorScheme.secondary,
                                 modifier = Modifier.padding(top = 8.dp)
                             )
                         }
@@ -175,8 +153,8 @@ private fun DecryptResultCard(
                             onClick = { isExpanded = !isExpanded },
                             modifier = Modifier.padding(top = 12.dp),
                             colors = ButtonDefaults.filledTonalButtonColors(
-                                containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.9f),
-                                contentColor = MaterialTheme.colorScheme.onPrimary
+                                containerColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.9f),
+                                contentColor = MaterialTheme.colorScheme.onSecondary
                             ),
                             shapes = ButtonDefaults.shapes()
                         ) {
@@ -194,7 +172,7 @@ private fun DecryptResultCard(
                             modifier = Modifier.fillMaxWidth(),
                             verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
-                            HorizontalDivider(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f))
+                            HorizontalDivider(color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f))
 
                             // Step-by-step
                             Text(
@@ -202,19 +180,19 @@ private fun DecryptResultCard(
                                 style = MaterialTheme.typography.labelLarge,
                                 fontWeight = FontWeight.Bold,
                                 modifier = Modifier.padding(top = 8.dp),
-                                color = MaterialTheme.colorScheme.primary
+                                color = MaterialTheme.colorScheme.secondary
                             )
 
                             Card(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .background(
-                                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f),
+                                        MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f),
                                         MaterialTheme.shapes.medium
                                     ),
                                 shape = MaterialTheme.shapes.medium,
                                 colors = CardDefaults.cardColors(
-                                    containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.2f)
+                                    containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.2f)
                                 )
                             ) {
                                 Column(
@@ -233,46 +211,94 @@ private fun DecryptResultCard(
                                 }
                             }
 
-                            HorizontalDivider(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f))
+                            HorizontalDivider(color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f))
 
-                            // Kandidat pesan
-                            Text(
-                                text = "Kandidat Pesan Asli",
-                                style = MaterialTheme.typography.labelLarge,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.primary
-                            )
-
+                            // Summary Box
                             Card(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .background(
-                                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
+                                        MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.3f),
                                         MaterialTheme.shapes.medium
                                     ),
                                 shape = MaterialTheme.shapes.medium,
                                 colors = CardDefaults.cardColors(
-                                    containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.1f)
+                                    containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.1f)
                                 )
                             ) {
                                 Column(
                                     modifier = Modifier.padding(12.dp),
                                     verticalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
-                                    res.candidates.forEachIndexed { index, candidate ->
-                                        Text(
-                                            text = "M${index + 1} = $candidate",
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            fontWeight = FontWeight.SemiBold,
-                                            color = MaterialTheme.colorScheme.primary
-                                        )
-                                    }
+                                    Text(
+                                        text = "Ringkasan",
+                                        style = MaterialTheme.typography.labelLarge,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.secondary
+                                    )
+                                    Text(
+                                        text = "Private Key (p) = ${res.p}",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.secondary,
+                                        fontWeight = FontWeight.SemiBold
+                                    )
+                                    Text(
+                                        text = "Ciphertext (c) = ${res.ciphertext}",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.secondary,
+                                        fontWeight = FontWeight.SemiBold
+                                    )
+                                    Text(
+                                        text = "Message (m) = ${res.message}",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.secondary
+                                    )
                                 }
                             }
 
-                            HorizontalDivider(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f))
+                            HorizontalDivider(color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f))
 
-                            // Warning
+                            // Keunggulan Card
+                            Card(
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = MaterialTheme.shapes.large,
+                                colors = CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.2f)
+                                )
+                            ) {
+                                Column(
+                                    modifier = Modifier.padding(12.dp),
+                                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Filled.Check,
+                                            contentDescription = null,
+                                            tint = MaterialTheme.colorScheme.secondary,
+                                            modifier = Modifier.size(24.dp)
+                                        )
+                                        Text(
+                                            text = "Keunggulan Rabin-p",
+                                            style = MaterialTheme.typography.labelLarge,
+                                            color = MaterialTheme.colorScheme.secondary,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    }
+                                    Text(
+                                        text = "Rabin-p mengatasi kelemahan Rabin Cipher dengan menghasilkan pesan unik. Tidak ada ambiguitas 4 kandidat seperti pada Rabin Cipher basic.",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.onSurface
+                                    )
+                                }
+                            }
+
+                            HorizontalDivider(color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f))
+
+                            // Kekurangan Card
                             Card(
                                 modifier = Modifier.fillMaxWidth(),
                                 shape = MaterialTheme.shapes.large,
@@ -295,16 +321,16 @@ private fun DecryptResultCard(
                                             modifier = Modifier.size(24.dp)
                                         )
                                         Text(
-                                            text = "Kelemahan Rabin Cipher",
+                                            text = "Kekurangan Rabin-p",
                                             style = MaterialTheme.typography.labelLarge,
                                             color = MaterialTheme.colorScheme.onErrorContainer,
                                             fontWeight = FontWeight.Bold
                                         )
                                     }
                                     Text(
-                                        text = "Hanya 1 dari ke-4 kandidat adalah pesan asli, namun tidak ada cara untuk menentukan yang mana. " +
-                                                "Penerima harus mengetahui format pesan yang benar. " +
-                                                "Rabin-p merupakan salah satu algoritma yang dapat menyelesaikan kelemahan ini.",
+                                        text = "Nilai yang dapat dienkripsi terbatas. " +
+                                                "Pengirim dan penerima harus menyetujui domain pesan: apakah berada di antara 0 hingga floor(p²/2) atau floor(p²/2) hingga p². " +
+                                                "Selain itu, pesan juga harus relatif prima dengan private key",
                                         style = MaterialTheme.typography.bodyMedium,
                                         color = MaterialTheme.colorScheme.onErrorContainer
                                     )
@@ -313,7 +339,7 @@ private fun DecryptResultCard(
                         }
                     }
 
-                    HorizontalDivider(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f))
+                    HorizontalDivider(color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f))
 
                     FilledTonalButton(
                         onClick = {
@@ -323,8 +349,8 @@ private fun DecryptResultCard(
                         modifier = Modifier.align(Alignment.End),
                         shapes = ButtonDefaults.shapes(),
                         colors = ButtonDefaults.filledTonalButtonColors(
-                            containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
-                            contentColor = MaterialTheme.colorScheme.onPrimary
+                            containerColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.7f),
+                            contentColor = MaterialTheme.colorScheme.onSecondary
                         )
                     ) {
                         Text("Reset")

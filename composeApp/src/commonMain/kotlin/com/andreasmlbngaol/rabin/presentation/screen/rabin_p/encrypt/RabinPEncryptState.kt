@@ -1,14 +1,14 @@
-package com.andreasmlbngaol.rabin.presentation.screen.rabin_basic.encrypt
+package com.andreasmlbngaol.rabin.presentation.screen.rabin_p.encrypt
 
 import com.andreasmlbngaol.rabin.data.service.RabinValidatorImpl
-import com.andreasmlbngaol.rabin.domain.model.rabin_basic.RabinBasicEncryptResult
+import com.andreasmlbngaol.rabin.domain.model.rabin_p.RabinPEncryptResult
 
-data class RabinBasicEncryptState(
+data class RabinPEncryptState(
     val pAsString: String = "",
     val qAsString: String = "",
     val messageAsString: String = "",
     val errors: Map<String, String> = emptyMap(),
-    val result: RabinBasicEncryptResult? = null
+    val result: RabinPEncryptResult? = null
 ) {
     val p: Long? get() = pAsString.toLongOrNull()
     val q: Long? get() = qAsString.toLongOrNull()
@@ -23,10 +23,11 @@ data class RabinBasicEncryptState(
         return valid
     }
     val isMessageValid: Boolean get() {
-        val (valid, _) = RabinValidatorImpl.validateBasicMessage(messageAsString, p, q)
+        val (valid, _) = RabinValidatorImpl.validatePMessage(messageAsString, p)
         return valid
     }
 
     val isAllValid: Boolean get() = isPValid && isQValid && isMessageValid
-    val n: Long? get() = if (isPValid && isQValid) p!! * q!! else null
+    val pSquared: Long? get() = if (isPValid) p!! * p!! else null
+    val n: Long? get() = if (isPValid && isQValid) p!! * p!! * q!! else null
 }

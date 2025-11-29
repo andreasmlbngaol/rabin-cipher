@@ -1,4 +1,4 @@
-package com.andreasmlbngaol.rabin.presentation.screen.rabin_basic
+package com.andreasmlbngaol.rabin.presentation.screen.rabin_p
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
@@ -15,18 +15,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.andreasmlbngaol.rabin.presentation.component.TopBar
 import com.andreasmlbngaol.rabin.presentation.component.TopBarType
-import com.andreasmlbngaol.rabin.presentation.screen.rabin_basic.decrypt.RabinBasicDecryptScreen
-import com.andreasmlbngaol.rabin.presentation.screen.rabin_basic.encrypt.RabinBasicEncryptScreen
+import com.andreasmlbngaol.rabin.presentation.screen.rabin_p.decrypt.RabinPDecryptScreen
+import com.andreasmlbngaol.rabin.presentation.screen.rabin_p.encrypt.RabinPEncryptScreen
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
-fun RabinBasicScreen() {
+fun RabinPScreen() {
     Scaffold(
         topBar = {
             TopBar(
-                title = "Rabin Cipher",
+                title = "Rabin-p",
                 type = TopBarType.Centered,
-                containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f),
+                containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f)
             )
         }
     ) { paddingValues ->
@@ -35,21 +35,21 @@ fun RabinBasicScreen() {
                 .fillMaxSize()
                 .padding(paddingValues)
                 .background(
-                    MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.08f)
+                    MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.08f)
                 )
         ) {
-            RabinBasicEncryptScreen(
+            RabinPEncryptScreen(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxHeight()
             )
 
             VerticalDivider(
-                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
+                color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.3f),
                 thickness = 2.dp
             )
 
-            RabinBasicDecryptScreen(
+            RabinPDecryptScreen(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxHeight()
