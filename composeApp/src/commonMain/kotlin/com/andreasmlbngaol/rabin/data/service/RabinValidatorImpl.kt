@@ -78,7 +78,7 @@ object RabinValidatorImpl : RabinValidator {
         val num = m.toLongOrNull() ?: return false to "Message harus angka"
         if (num <= 0) return false to "Message harus positif"
         if (p != null) {
-            val threshold = (p * p) / 2
+            val threshold = (p * p) / 2L
 
             if (num > threshold) return false to "Message harus < $threshold"
             if (!isCoprime(num, p))

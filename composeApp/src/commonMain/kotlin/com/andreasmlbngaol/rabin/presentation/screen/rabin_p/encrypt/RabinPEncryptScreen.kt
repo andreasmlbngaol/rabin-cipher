@@ -24,7 +24,6 @@ import com.andreasmlbngaol.rabin.domain.model.rabin_p.RabinPEncryptResult
 import com.andreasmlbngaol.rabin.presentation.utils.toClipEntry
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
-import kotlin.math.floor
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -95,7 +94,7 @@ fun RabinPEncryptScreen(
                 if ("message" in state.errors) {
                     Text(state.errors["message"] ?: "")
                 } else if (state.pSquared != null) {
-                    Text("Max: ${floor(state.pSquared!! / 2.0).toInt()}")
+                    Text("Max: ${state.pSquared!! / 2L}")
                 }
             },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
